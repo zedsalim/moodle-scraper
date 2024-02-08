@@ -1,9 +1,23 @@
 import os
 import re
+import json
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from config import username, password, course_urls, login_url, download_path
+
+def load_downloaded_files(course_folder_path):
+    downloaded_files_path = os.path.join(course_folder_path, "downloaded_files.json")
+    if os.path.exists(downloaded_files_path):
+        with open(downloaded_files_path, 'r') as file:
+            return json.load(file)
+    else:
+        return []
+
+def save_downloaded_files(course_folder_path, downloaded_files):
+    downloaded_files_path = os.path.join(course_folder_path, "downloaded_files.json")
+    with open(downloaded_files_path, 'w') as file:
+        json.dump(downloaded_files, file, indent=4)
 
 def download_course_files(course_url):
     session = requests.Session()
@@ -33,6 +47,8 @@ def download_course_files(course_url):
     course_folder_path = os.path.join(download_path, clean_course_title)
     os.makedirs(course_folder_path, exist_ok=True)
 
+    downloaded_files = load_downloaded_files(course_folder_path)
+
     for index, subtitle in enumerate(soup.select('.content h3'), start=1):
         subtitle_text = subtitle.text.strip()
         clean_subtitle = f"{index:02d}_{''.join(c if c.isalnum() or c.isspace() else '_' for c in subtitle_text)}"
@@ -48,27 +64,35 @@ def download_course_files(course_url):
                 actual_file_name = re.sub(r'\s*Folder\s*', '', file_name).strip()
                 file_name = f"{file_index:02d}_{''.join(c if c.isalnum() or c.isspace() else '_' for c in actual_file_name)}"
 
-                if is_folder:
-                    file_name += '_FOLDER'
+                file_path = os.path.join(clean_course_title, clean_subtitle, file_name)
 
-                    folder_url = urljoin(course_url, file_item.select_one('a')['href'])
-                    folder_response = session.get(folder_url)
-                    folder_soup = BeautifulSoup(folder_response.text, 'html.parser')
+                if file_path not in downloaded_files:
+                    if is_folder:
+                        file_name += '_FOLDER'
 
-                    folder_subtitle_folder_path = os.path.join(subtitle_folder_path, file_name)
-                    os.makedirs(folder_subtitle_folder_path, exist_ok=True)
+                        folder_url = urljoin(course_url, file_item.select_one('a')['href'])
+                        folder_response = session.get(folder_url)
+                        folder_soup = BeautifulSoup(folder_response.text, 'html.parser')
 
-                    for link in folder_soup.select('.fp-filename-icon a'):
-                        file_url = urljoin(course_url, link['href'])
-                        file_name = link.select_one('.fp-filename').text.strip()
-                        file_name = ''.join(c if c.isalnum() or c.isspace() else '_' for c in file_name)
-                        download_file(session, course_url, file_url, os.path.join(folder_subtitle_folder_path, file_name))
+                        folder_subtitle_folder_path = os.path.join(subtitle_folder_path, file_name)
+                        os.makedirs(folder_subtitle_folder_path, exist_ok=True)
 
-                    print('Downloaded folder:', os.path.join(clean_course_title, clean_subtitle, file_name))
+                        for link in folder_soup.select('.fp-filename-icon a'):
+                            file_url = urljoin(course_url, link['href'])
+                            file_name = link.select_one('.fp-filename').text.strip()
+                            file_name = ''.join(c if c.isalnum() or c.isspace() else '_' for c in file_name)
+                            download_file(session, course_url, file_url, os.path.join(folder_subtitle_folder_path, file_name))
+
+                            downloaded_files.append(file_path)
+                            print('Downloaded folder:', file_path)
+                    else:
+                        download_file(session, course_url, urljoin(course_url, file_item.select_one('a')['href']), os.path.join(subtitle_folder_path, file_name))
+                        downloaded_files.append(file_path)
+                        print('Downloaded file:', file_path)
                 else:
-                    download_file(session, course_url, urljoin(course_url, file_item.select_one('a')['href']), os.path.join(subtitle_folder_path, file_name))
-                    print('Downloaded file:', os.path.join(clean_course_title, clean_subtitle, file_name))
+                    print('Skipped (already exists):', file_path)
 
+    save_downloaded_files(course_folder_path, downloaded_files)
     session.close()
 
 def download_file(session, course_url, file_url, file_path):
