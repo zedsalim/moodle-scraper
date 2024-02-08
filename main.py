@@ -49,6 +49,14 @@ def download_course_files(course_url):
 
     downloaded_files = load_downloaded_files(course_folder_path)
 
+    def print_colored(message, color):
+        colors = {
+            'green': '\033[92m',
+            'blue': '\033[94m', 
+            'end': '\033[0m'    
+        }
+        print(colors[color] + message + colors['end'])
+
     for index, subtitle in enumerate(soup.select('.content h3'), start=1):
         subtitle_text = subtitle.text.strip()
         clean_subtitle = f"{index:02d}_{''.join(c if c.isalnum() or c.isspace() else '_' for c in subtitle_text)}"
@@ -84,13 +92,13 @@ def download_course_files(course_url):
                             download_file(session, course_url, file_url, os.path.join(folder_subtitle_folder_path, file_name))
 
                             downloaded_files.append(file_path)
-                            print('Downloaded folder:', file_path)
+                            print_colored('Downloaded folder: ' + file_path, 'blue')
                     else:
                         download_file(session, course_url, urljoin(course_url, file_item.select_one('a')['href']), os.path.join(subtitle_folder_path, file_name))
                         downloaded_files.append(file_path)
-                        print('Downloaded file:', file_path)
+                        print_colored('Downloaded file: ' + file_path, 'green')
                 else:
-                    print('Skipped (already exists):', file_path)
+                    print_colored('Skipped (already exists): ' + file_path, 'blue')
 
     save_downloaded_files(course_folder_path, downloaded_files)
     session.close()
