@@ -9,7 +9,7 @@ Automate the process of downloading course materials from your university's Mood
 - [Usage](#usage)
 - [License](#license)
 
-## Prerequisites
+## Requirements
 
 - [Python](https://www.python.org/) (version 3.6 or later)
 - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) (bs4)
