@@ -1,4 +1,7 @@
-# University Moodle Scraper
+<h1 align="center">University Moodle Scraper</h1>
+<p align="center">
+    <img alt="life" width="550" src="moodle-scraper.gif">
+</p>
 
 Automate the process of downloading course materials from your university's Moodle website with this Python script. The script securely logs in using provided credentials, navigates through specified course URLs, and efficiently downloads all relevant materials to a designated local directory.
 
