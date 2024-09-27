@@ -4,7 +4,7 @@ Automate the process of downloading course materials from your university's Mood
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
