@@ -1,9 +1,9 @@
-<h1 align="center">University Moodle Scraper</h1>
+<h1 align="center">Moodle Content Automator</h1>
 <p align="center">
     <img alt="life" width="550" src="moodle-scraper.gif">
 </p>
 
-Automate the process of downloading course materials from your university's Moodle website with this Python script. The script securely logs in using provided credentials, navigates through specified course URLs, and efficiently downloads all relevant materials to a designated local directory.
+Automate the process of downloading course materials from your university's Moodle website with this Python script. The script securely logs in using provided credentials, automatically detects new content across all enrolled courses, and efficiently downloads all relevant materials to a designated local directory.
 
 ## Table of Contents
 
@@ -15,7 +15,6 @@ Automate the process of downloading course materials from your university's Mood
 ## Requirements
 
 - [Python](https://www.python.org/) (version 3.6 or later)
-- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) (bs4)
 - [Requests](https://docs.python-requests.org/en/latest/) library
 
 ## Installation
@@ -37,7 +36,7 @@ source venv/bin/activate  # On Windows, use 'venv\Scripts\activate'
 3. Install the required dependencies:
 
 ```bash
-pip install beautifulsoup4 requests
+pip install requests
 ```
 
 ## Usage
@@ -46,52 +45,40 @@ pip install beautifulsoup4 requests
 
 #### Credentials (config.py)
 
-Update the `username` and `password` variables with your Moodle login credentials:
+Update the `MOODLE_USERNAME` and `MOODLE_PASSWORD` variables with your Moodle login credentials:
 
 ```python
 # Credentials
-username = "your_username"
-password = "your_password"
+MOODLE_USERNAME = "your_username"
+MOODLE_PASSWORD = "your_password"
 ```
 
-#### Course URLs (config.py)
+#### Moodle URL (config.py)
 
-To obtain the `login_url`, navigate to your university's Moodle website and copy the URL of the login page. It typically looks like "http://.........../login/index.php."
-
-For `course_urls`, follow these steps:
-
-1. Log in to your university's Moodle platform.
-1. Click on the name of the course you want to scrape.
-1. Once on the course page, copy the URL from the address bar.
-
-Update the `login_url` with the copied login URL and the `course_urls` list with the URLs of the courses you want to scrape:
+Update the `MOODLE_URL` with your university's Moodle platform URL:
 
 ```python
-# URLs examples
-login_url = "http://university-moodle-website.edu/login/index.php"
-course_urls = [
-    "http://university-moodle-website.edu/course/view.php?id=80",
-    "http://university-moodle-website.edu/course/view.php?id=81",
-    # Add more course URLs as needed
-]
+# Moodle URL
+MOODLE_URL = "https://elearning.university-site.edu"
 ```
 
 #### Download Path (config.py)
 
-Update the `download_path` variable with the local directory path to store the downloaded files:
+Update the `DOWNLOAD_DIR` variable with the local directory path to store the downloaded files:
 
 ```python
 # Download path
-download_path = "/path/to/download/files"
+DOWNLOAD_DIR = "moodle_downloads"
+STATE_FILE = "last_check.json"
 ```
 
-### 2. Run the main.py script:
+### 2. Run the moodle-scraper.py script:
 
 ```bash
-python main.py
+python moodle-scraper.py
 ```
 
-The script will log in, navigate through the specified courses, and download all course materials to the designated directory.
+The script will authenticate, automatically scan all your enrolled courses, and download new or missing course materials to the designated directory.
 
 # Important Note:
 

@@ -1,14 +1,7 @@
-# Credentials
-username = "your_username"
-password = "your_password"
+MOODLE_URL = "https://elearning.university-site.edu"
+MOODLE_USERNAME = "your_username"
+MOODLE_PASSWORD = "your_password"
 
-# URLs examples
-login_url = "http://university-moodle-website.edu/login/index.php"
-course_urls = [
-    "http://university-moodle-website.edu/course/view.php?id=80",
-    "http://university-moodle-website.edu/course/view.php?id=81",
-    # Add more course URLs as needed
-]
-
-# Download path
-download_path = "/path/to/download/files"
+# Download settings
+DOWNLOAD_DIR = "moodle_downloads"
+STATE_FILE = "last_check.json"
